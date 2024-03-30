@@ -77,7 +77,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: john-afrano/helm-repository 
-          ref: pre-deployment
+          ref: main
           token: '${{ secrets.TOKEN_HELM_STORE }}'
           path: ./helm-repository
       - name: Copy Chart Package
@@ -86,7 +86,7 @@ jobs:
           cp *.tgz helm-repository/app/${{ steps.extract-repository-name.outputs.REPO_NAME }}/
       - name: Commit and Push Changes
         run: |
-          cd helm-store/
+          cd helm-repository/
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git pull origin pre-deployment
