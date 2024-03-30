@@ -89,7 +89,7 @@ jobs:
           cd helm-repository/
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git pull origin pre-deployment
+          git pull origin main
           git add .
           git commit -m "${{ github.ref_name }}"
-          git push origin pre-deployment
+          git push origin main
