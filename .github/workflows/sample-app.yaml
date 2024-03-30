@@ -76,14 +76,14 @@ jobs:
       - name: Clone Helm Chart Repo
         uses: actions/checkout@v3
         with:
-          repository: eduardo854/helm-store 
+          repository: john-afrano/helm-repository 
           ref: pre-deployment
           token: '${{ secrets.TOKEN_HELM_STORE }}'
-          path: ./helm-store
+          path: ./helm-repository
       - name: Copy Chart Package
         run: |
-          mkdir -p helm-store/app/${{ steps.extract-repository-name.outputs.REPO_NAME }}
-          cp *.tgz helm-store/app/${{ steps.extract-repository-name.outputs.REPO_NAME }}/
+          mkdir -p helm-repository/app/${{ steps.extract-repository-name.outputs.REPO_NAME }}
+          cp *.tgz helm-repository/app/${{ steps.extract-repository-name.outputs.REPO_NAME }}/
       - name: Commit and Push Changes
         run: |
           cd helm-store/
