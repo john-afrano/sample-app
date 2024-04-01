@@ -156,11 +156,11 @@ jobs:
         DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
         REPO_NAME=${{ steps.repository.outputs.REPO_NAME }}
 
-        yq eval -i '.version = ${CHART_VERSION}.${RUN_NUMBER}' "./${HELM_FOLDER}/Chart.yaml"
-        yq eval -i '.appVersion = $(cat VERSION)' "./${HELM_FOLDER}/Chart.yaml"
+        yq eval -i ".version = '${CHART_VERSION}.${RUN_NUMBER}'" "./${HELM_FOLDER}/Chart.yaml"
+        yq eval -i ".appVersion = '$(cat VERSION)'" "./${HELM_FOLDER}/Chart.yaml"
 
-        yq eval -i '.image.repository = ${DOCKER_USERNAME}/${REPO_NAME}' "./${HELM_FOLDER}/values.yaml"
-        yq eval -i '.image.tag = ${IMAGE_NAME}@${IMAGE_DIGEST}' "./${HELM_FOLDER}/values.yaml"
+        yq eval -i ".image.repository = '${DOCKER_USERNAME}/${REPO_NAME}'" "./${HELM_FOLDER}/values.yaml"
+        yq eval -i ".image.tag = '${IMAGE_NAME}@${IMAGE_DIGEST}'" "./${HELM_FOLDER}/values.yaml"
     - name: Set up Helm
       uses: azure/setup-helm@v3
       with:
