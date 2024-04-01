@@ -184,7 +184,7 @@ jobs:
       run: |
         cd helm-repository
         git config user.name "${GITHUB_ACTOR}"
-        git config email.name "${GITHUB_ACTOR}@users.noreply.github.com"
+        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         git pull origin pre-deployment
         git add .
         git commit -m "${{ github.ref_name }}"
