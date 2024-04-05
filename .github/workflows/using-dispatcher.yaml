@@ -24,7 +24,7 @@ jobs:
       docker_context: '.'
       docker_file_name: './Dockerfile'
       helm_directory: 'helm'
-      helm_repository_url: ${{ vars.url_helm_repository }}
+      helm_repository_url: ${{ vars.URL_HELM_REPOSITORY }}
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
