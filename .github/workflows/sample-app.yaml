@@ -34,7 +34,7 @@ jobs:
         IS_FEATURE=$(echo "${BRANCH_NAME}" | grep -Eq '^feature_|^feat_' && echo true || echo false)
         echo "Is feature branch: ${IS_FEATURE}"
         
-        IS_DEV_ENV=$(echo "${IS_DEVELOP} || ${IS_FEATURE}" | bc)
+        IS_DEV_ENV=$(echo "${IS_DEVELOP} | ${IS_FEATURE}" | bc)
         echo "::set-output name=IS_DEV_ENV::${IS_DEV_ENV}"
         echo "Is development environment: ${IS_DEV_ENV}"
 
