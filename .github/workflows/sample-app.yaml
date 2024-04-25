@@ -26,11 +26,17 @@ jobs:
       id: docker-image
       run: |
         BRANCH_NAME=$(echo ${{ github.ref_name }} | sed 's/\//_/g')
+        echo "Branch name: ${BRANCH_NAME}"
 
         IS_DEVELOP=$(echo "${BRANCH_NAME}" | grep -q '^develop$' && echo true || echo false)
+        echo "Is develop branch: ${IS_DEVELOP}"
+        
         IS_FEATURE=$(echo "${BRANCH_NAME}" | grep -Eq '^feature/|^feat/' && echo true || echo false)
+        echo "Is feature branch: ${IS_FEATURE}"
+        
         IS_DEV_ENV=$(echo "${IS_DEVELOP} || ${IS_FEATURE}" | bc)
         echo "::set-output name=IS_DEV_ENV::${IS_DEV_ENV}"
+        echo "Is development environment: ${IS_DEV_ENV}"
 
         IMAGE_NAME=${BRANCH_NAME}_${{ github.sha }}
         echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
