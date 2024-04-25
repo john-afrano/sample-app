@@ -28,10 +28,10 @@ jobs:
         BRANCH_NAME=$(echo ${{ github.ref_name }} | sed 's/\//_/g')
         echo "Branch name: ${BRANCH_NAME}"
 
-        IS_DEVELOP=$(echo "${BRANCH_NAME}" | grep -q '^develop$' && echo true || echo false)
+        IS_DEVELOP=$(echo "${BRANCH_NAME}" | grep -q '^develop$' && echo 1 || echo 0)
         echo "Is develop branch: ${IS_DEVELOP}"
         
-        IS_FEATURE=$(echo "${BRANCH_NAME}" | grep -Eq '^feature_|^feat_' && echo true || echo false)
+        IS_FEATURE=$(echo "${BRANCH_NAME}" | grep -Eq '^feature_|^feat_' && echo 1 || echo 0)
         echo "Is feature branch: ${IS_FEATURE}"
         
         IS_DEV_ENV=$((IS_DEVELOP || IS_FEATURE))
