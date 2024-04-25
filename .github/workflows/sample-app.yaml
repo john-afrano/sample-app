@@ -31,7 +31,7 @@ jobs:
         IS_DEVELOP=$(echo "${BRANCH_NAME}" | grep -q '^develop$' && echo true || echo false)
         echo "Is develop branch: ${IS_DEVELOP}"
         
-        IS_FEATURE=$(echo "${BRANCH_NAME}" | grep -Eq '^feature/|^feat/' && echo true || echo false)
+        IS_FEATURE=$(echo "${BRANCH_NAME}" | grep -Eq '^feature_|^feat_' && echo true || echo false)
         echo "Is feature branch: ${IS_FEATURE}"
         
         IS_DEV_ENV=$(echo "${IS_DEVELOP} || ${IS_FEATURE}" | bc)
