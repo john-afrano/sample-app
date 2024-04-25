@@ -1,101 +1,3 @@
-# name: Application CI
-# on:
-#   push:
-#     branches:
-#     - 'main'
-#     - 'develop'
-#     - 'release/**'
-#     - 'releases/**'
-#     - 'hotfix/**'
-#     - 'feature/**'
-#     - 'feat/**'
-#     paths-ignore:
-#     - 'docs/**'
-# jobs:
-#   build-and-push:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
-#     - name: Create Docker image name
-#       id: docker-image
-#       run: |
-#         BRANCH_NAME=${{ github.ref_name }}
-#         IMAGE_NAME=${BRANCH_NAME}_${{ github.sha }}
-#         echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_OUTPUT
-#     - name: Extract repository name
-#       id: repository
-#       run: |
-#         REPO_NAME=$(echo "${{ github.repository }}" | cut -d '/' -f 2)
-#         echo "REPO_NAME=${REPO_NAME}" >> $GITHUB_OUTPUT
-#     - name: Login to Docker registry
-#       uses: docker/login-action@v3
-#       with:
-#         registry: docker.io
-#         username: ${{ secrets.DOCKER_USERNAME }}
-#         password: ${{ secrets.DOCKER_PASSWORD }}
-#     - name: Build and push Docker image
-#       uses: docker/build-push-action@v5
-#       with:
-#         context: .
-#         file: ./Dockerfile
-#         push: true
-#         tags: |
-#           docker.io/${{ secrets.DOCKER_USERNAME }}/${{ steps.repository.outputs.REPO_NAME }}:${{ steps.docker-image.outputs.IMAGE_NAME }}
-#     - name: Retrieve Docker image digest
-#       id: image-digest
-#       run: |
-#         IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "${{ secrets.DOCKER_USERNAME }}/${{ steps.repository.outputs.REPO_NAME }}:${{ steps.docker-image.outputs.IMAGE_NAME }}" | cut -d '@' -f 2)
-#         echo "IMAGE_DIGEST=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
-#     - name: Setup yq tools
-#       uses: mikefarah/yq@v4.35.2
-#     - name: Update yaml files
-#       run: |
-#         CHART_VERSION="$(cat VERSION_HELM)"
-#         HELM_FOLDER=${{ vars.NAME_HELM_FOLDER }}
-#         RUN_NUMBER=${{ github.run_number }}
-#         IMAGE_NAME=${{ steps.docker-image.outputs.IMAGE_NAME }}
-#         IMAGE_DIGEST=${{ steps.image-digest.outputs.IMAGE_DIGEST }}
-
-#         DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-#         REPO_NAME=${{ steps.repository.outputs.REPO_NAME }}
-
-#         yq eval -i '.version = \"${CHART_VERSION}.${RUN_NUMBER}\"' "./${HELM_FOLDER}/Chart.yaml"
-#         yq eval -i '.appVersion = \"$(cat VERSION)\"' "./${HELM_FOLDER}/Chart.yaml"
-
-#         yq eval -i '.image.repository = \"${DOCKER_USERNAME}/${REPO_NAME}\"' "./${HELM_FOLDER}/values.yaml"
-#         yq eval -i '.image.tag = \"${IMAGE_NAME}@${IMAGE_DIGEST}\"' "./${HELM_FOLDER}/values.yaml"
-#     - name: Set up Helm
-#       uses: azure/setup-helm@v3
-#       with:
-#         version: 'v3.11.1'
-#     - name: Package Helm Chart
-#       run: |
-#         helm package ./${{ vars.NAME_HELM_FOLDER }}
-#         helm repo index ./${{ vars.NAME_HELM_FOLDER }} --url ${{ vars.URL_HELM_REPOSITORY }}
-#     - name: Clone Helm Chart repo
-#       uses: actions/checkout@v3
-#       with:
-#         repository: john-afrano/helm-repository
-#         ref: pre-deployment
-#         token: ${{ secrets.TOKEN_HELM_STORE }}
-#         path: ./helm-repository
-#     - name: Replace the Helm pkg
-#       run: |
-#         mkdir -p ./helm-repository/app/${{ steps.repository.outputs.REPO_NAME }}
-#         cp *.tgz ./helm-repository/app/${{ steps.repository.outputs.REPO_NAME }}/
-#     - name: Commit and push
-#       run: |
-#         cd helm-repository
-#         git config user.name "${GITHUB_ACTOR}"
-#         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-#         git pull origin pre-deployment
-#         git add .
-#         git commit -m "${{ github.ref_name }}"
-#         git push origin pre-deployment
-
-
-
 name: Application CI
 
 on:
@@ -110,13 +12,12 @@ on:
     - 'feat/**'
     paths-ignore:
     - 'docs/**'
-
-env:
-  IS_DEV_ENV: ''
   
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      IS_DEV_ENV: ${{ steps.docker-image.outputs.IS_DEV_ENV }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -129,7 +30,7 @@ jobs:
         IS_DEVELOP=$(echo "${BRANCH_NAME}" | grep -q '^develop$' && echo true || echo false)
         IS_FEATURE=$(echo "${BRANCH_NAME}" | grep -Eq '^feature/|^feat/' && echo true || echo false)
         IS_DEV_ENV=$(echo "${IS_DEVELOP} || ${IS_FEATURE}" | bc)
-        echo "IS_DEV_ENV=${IS_DEV_ENV}" >> $GITHUB_ENV
+        echo "::set-output name=IS_DEV_ENV::${IS_DEV_ENV}"
 
         IMAGE_NAME=${BRANCH_NAME}_${{ github.sha }}
         echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
@@ -165,7 +66,7 @@ jobs:
   push-helm-files:
     runs-on: ubuntu-latest
     needs: build-and-push
-    if: ${{ env.IS_DEV_ENV }} == 'true'
+    if: needs.build-and-push.outputs.IS_DEV_ENV == 'true'
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -203,7 +104,7 @@ jobs:
   push-helm-chart:
     runs-on: ubuntu-latest
     needs: build-and-push
-    if: false
+    if: needs.build-and-push.outputs.IS_DEV_ENV == 'false'
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
