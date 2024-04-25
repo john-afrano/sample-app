@@ -97,6 +97,7 @@
 
 
 name: Application CI
+
 on:
   push:
     branches:
@@ -109,6 +110,10 @@ on:
     - 'feat/**'
     paths-ignore:
     - 'docs/**'
+
+env:
+  IS_DEV_ENV: ''
+  
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
