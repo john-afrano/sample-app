@@ -12,7 +12,7 @@ By exploring this example, you can gain insights into how to set up a robust CI/
 
 To edit this diagram, you can simply open it on https://excalidraw.com/.
 
-## About Me
+## About Myself
 
 Here's the link to my article on [MEDIUM](https://medium.com/@eduardo854/building-your-gitops-pipeline-with-github-actions-dockerhub-and-helm-repository-553c4873116e).
 
