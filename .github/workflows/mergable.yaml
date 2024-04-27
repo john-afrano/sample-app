@@ -3,7 +3,15 @@ name: Check Mergeability
 on:
   pull_request:
     branches:
-    - main
+    - 'main'
+    - 'develop'
+    - 'release/**'
+    - 'releases/**'
+    - 'hotfix/**'
+    - 'feature/**'
+    - 'feat/**'
+    paths-ignore:
+    - 'docs/**'
     types: [opened, reopened]
 
 jobs:
