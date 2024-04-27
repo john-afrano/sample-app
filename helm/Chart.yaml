@@ -5,5 +5,5 @@ home: https://github.com/john-afrano/sample-app-ci-cd
 sources:
   - https://github.com/john-afrano/sample-app-ci-cd
 type: application
-version: 0.1.51
+version: 0.1.52
 appVersion: 1.0.0
