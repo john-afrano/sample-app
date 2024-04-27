@@ -1,0 +1,21 @@
+name: Check Mergeability
+
+on:
+  pull_request:
+    branches:
+    - main
+    types: [opened, reopened]
+
+jobs:
+  check_mergeability:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check Mergeability
+        id: mergeability
+        run: |
+          echo "Is the pull request mergeable? ${{ github.event.pull_request.mergeable }}"
+          echo "Mergeable: ${{ github.event.pull_request.mergeable }}"
